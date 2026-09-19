@@ -33,7 +33,7 @@ function isValidEmail(email: string): boolean {
   return emailRegex.test(email);
 }
 
-export async function handler(req: Request) {
+export async function POST(req: Request) {
   if (req.method !== 'POST') {
     return json({ error: 'Method not allowed' }, 405);
   }
