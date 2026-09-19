@@ -1,0 +1,6 @@
+{
+  "name": "Creative Design Portfolio",
+  "description": "Production-grade portfolio featuring interactive creative design projects, verified technical certificates, and client collaboration inquiries.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

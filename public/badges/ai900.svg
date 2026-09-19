@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" width="100%" height="100%">
+  <defs>
+    <!-- Clip for upper shield -->
+    <clipPath id="shield-clip">
+      <path d="M80 6 C105 6, 126 15, 134 26 C134 68, 120 120, 80 154 C40 120, 26 68, 26 26 C34 15, 55 6, 80 6 Z" />
+    </clipPath>
+  </defs>
+
+  <!-- Outer Dark Border Shield -->
+  <path d="M80 4 C107 4, 129 13, 137 25 C137 70, 122 123, 80 158 C38 123, 23 70, 23 25 C31 13, 53 4, 80 4 Z" fill="#0b2341" />
+
+  <!-- Inner White Shield Layer -->
+  <path d="M80 8 C104 8, 124 16, 131 27 C131 68, 118 118, 80 151 C42 118, 29 68, 29 27 C36 16, 56 8, 80 8 Z" fill="#ffffff" />
+
+  <!-- Upper White Area with Microsoft Certified -->
+  <g id="shield-header">
+    <text x="80" y="32" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="700" font-size="12" fill="#002050" text-anchor="middle">Microsoft</text>
+    <text x="80" y="44" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="600" font-size="7.5" letter-spacing="1.5" fill="#586b82" text-anchor="middle">CERTIFIED</text>
+  </g>
+
+  <!-- Lower Shield Blue Area -->
+  <path d="M29 68 C29 98, 48 132, 80 151 C112 132, 131 98, 131 68 Z" fill="#005da6" />
+
+  <!-- Single White Star for Fundamentals -->
+  <path d="M80 114 L84.5 125 L96 125.5 L86.8 132.5 L90.2 143.5 L80 137 L69.8 143.5 L73.2 132.5 L64 125.5 L75.5 125 Z" fill="#ffffff" />
+
+  <!-- Curved Ribbon Banner -->
+  <g id="banner-ai900">
+    <path d="M12 62 C34 54, 126 54, 148 62 C154 64, 156 70, 154 84 C152 98, 146 102, 140 102 C118 96, 42 96, 20 102 C14 102, 8 98, 6 84 C4 70, 6 64, 12 62 Z" fill="#ffffff" stroke="#23272d" stroke-width="3" stroke-linejoin="round" />
+    <text x="80" y="76" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="800" font-size="11.5" fill="#1e242e" text-anchor="middle" letter-spacing="0.5">AZURE AI</text>
+    <text x="80" y="92" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="800" font-size="11.5" fill="#1e242e" text-anchor="middle" letter-spacing="0.5">FUNDAMENTALS</text>
+  </g>
+</svg>

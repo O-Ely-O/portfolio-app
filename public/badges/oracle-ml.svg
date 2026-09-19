@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" width="100%" height="100%">
+  <!-- Oracle Red Hexagon Badge -->
+  <defs>
+    <linearGradient id="oracle-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ea1b22" />
+      <stop offset="100%" stop-color="#b80005" />
+    </linearGradient>
+  </defs>
+
+  <polygon points="80,10 142,46 142,114 80,150 18,114 18,46" fill="url(#oracle-grad)" stroke="#ffffff" stroke-width="4" />
+  <polygon points="80,16 136,49 136,111 80,144 24,111 24,49" fill="none" stroke="#fca5a5" stroke-width="1.5" opacity="0.6" />
+
+  <!-- Oracle Red Brand pill -->
+  <rect x="42" y="38" width="76" height="20" rx="4" fill="#ffffff" />
+  <text x="80" y="52" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="12" fill="#ea1b22" text-anchor="middle" letter-spacing="2">ORACLE</text>
+
+  <!-- Text -->
+  <text x="80" y="76" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="700" font-size="9" fill="#ffffff" text-anchor="middle" letter-spacing="1">CERTIFIED</text>
+  <text x="80" y="93" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="800" font-size="11" fill="#ffffff" text-anchor="middle">MACHINE</text>
+  <text x="80" y="107" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="800" font-size="11" fill="#ffffff" text-anchor="middle">LEARNING</text>
+  <text x="80" y="125" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="600" font-size="8" fill="#fed7d7" text-anchor="middle">1Z0-1096-23</text>
+</svg>
