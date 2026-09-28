@@ -1,4 +1,5 @@
 import { Project, Certificate, Skill, ExperienceItem } from '../types';
+import aiCRMImage from '../assets/ai-crm-portfolio.svg';
 
 export const PERSONAL_INFO = {
   name: 'James Elliot A. Ciano',
@@ -187,23 +188,35 @@ The result is a clean 4-page view of sales, campaign attribution, customer lifet
     ]
   },
   {
-    id: 'azure-pipeline-observability',
-    title: 'Enterprise Azure ETL & Incident Observatory',
-    subtitle: 'Telemetry, Apache Airflow monitoring & root-cause diagnostic suite',
-    category: 'Data Pipelines',
-    image: 'https://images.unsplash.com/photo-1666875753105-c63a6f3bdc86?auto=format&fit=crop&w=1000&q=80',
-    description: 'Monitors Azure Data Factory, Databricks, and Airflow pipelines to detect data anomalies, incidents, and reliability issues early.',
-    fullDescription: 'Managed end-to-end data engineering incidents for global enterprise clients at DXC Technology. Created automated Shell and Airflow monitoring scripts that proactively identified data anomalies before downstream impact.',
-    tags: ['Azure Data Factory', 'Databricks', 'SQL', 'Apache Airflow', 'Shell Scripting'],
-    liveUrl: 'https://github.com',
-    githubUrl: 'https://github.com',
-    stats: '99.9% Data Flow Reliability',
-    year: '2023',
+    id: 'ai-crm-fastapi-supabase',
+    title: 'AI CRM — Pipeline, Tasks & Notes in One Place',
+    subtitle: 'A live sales CRM with auth, pipeline stages, follow-ups, and AI-assisted summaries',
+    category: 'Web Apps',
+    image: aiCRMImage,
+    description: 'A live sales CRM with auth, pipeline stages, follow-ups, and AI-assisted summaries.',
+    fullDescription: `I built AI-CRM to solve a simple problem: sales teams shouldn't have to juggle spreadsheets, messages, and scattered follow-ups. The CRM brings leads, pipeline stages, tasks, notes, activity, and deal history into one workspace, so everything stays connected and easy to act on.
+
+Built with React + TypeScript, FastAPI, and Supabase/PostgreSQL, the app includes authentication and per-user data isolation so each account only sees its own records. AI features can generate lead summaries and follow-up emails using real CRM data, giving users a useful starting point instead of generic AI output.`,
+    tags: [
+      'React',
+      'TypeScript',
+      'FastAPI',
+      'Supabase',
+      'PostgreSQL',
+      'Vite',
+      'Vercel',
+      'Railway',
+    ],
+    liveUrl: 'https://ai-crm-app-lovat.vercel.app',
+    githubUrl: 'https://github.com/O-Ely-O/ai-crm-app',
+    stats: 'Live demo with auth & pipeline',
+    year: '2026',
     highlights: [
-      'Resolved high-priority pipeline incidents across multi-terabyte data lakes',
-      'Streamlined anomaly detection using automated root-cause diagnostic queries',
-      'Standardized monitoring runbooks across global technology consulting squads'
-    ]
+      'Login and per-user data so each account only sees its own leads, tasks, and notes',
+      'A visual pipeline and dashboard driven by real API data',
+      'Tasks and notes stay connected to the leads they belong to',
+      'AI helpers generate lead summaries and follow-up email drafts from real CRM data',
+    ],
   },
   {
     id: 'voice-ai-crm-orchestrations',
