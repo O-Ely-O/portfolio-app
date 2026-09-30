@@ -100,7 +100,7 @@ export default function App() {
                   <p className="mt-6 text-center text-[10px] font-medium tracking-wide text-slate-500">
                     © {new Date().getFullYear()} James Portfolio. All rights reserved.
                   </p>
-            </footer> // Add footer with copyright notice and current year
+            </footer>
         </main>
 
         {/* Project Detail Modal */}
