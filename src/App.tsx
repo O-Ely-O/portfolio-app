@@ -96,6 +96,11 @@ export default function App() {
               </section>
             </div>
           </div>
+              <footer className="relative z-10 mt-5">
+                  <p className="mt-6 text-center text-[10px] font-medium tracking-wide text-slate-500">
+                    © {new Date().getFullYear()} James Portfolio. All rights reserved.
+                  </p>
+            </footer> // Add footer with copyright notice and current year
         </main>
 
         {/* Project Detail Modal */}
@@ -110,6 +115,7 @@ export default function App() {
           onClose={() => setIsResumeOpen(false)}
         />
       </div>
+      
     </ErrorBoundary>
   );
 }
