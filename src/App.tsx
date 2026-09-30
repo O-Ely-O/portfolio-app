@@ -27,18 +27,18 @@ export default function App() {
         - On desktop (lg+): fixed h-screen with fixed central glass card (no page scrolling, internal viewport containment)
         - On mobile (< lg): fluid min-h-screen allowing smooth natural touch scrolling with compact profile header
       */}
-      <div className="min-h-screen lg:h-screen w-full relative flex items-start lg:items-center justify-center p-2.5 sm:p-3.5 md:p-4 lg:p-5 overflow-y-auto lg:overflow-hidden">
+      <div className="min-h-screen lg:h-screen w-full relative flex items-start lg:items-center justify-center p-2.5 sm:p-3.5 md:p-4 lg:p-5 overflow-y-auto">
         {/* Background ambient lighting and retro geometric motifs strictly at extremities */}
         <BackgroundDecorations />
 
         {/* Center Glassmorphism Master Card */}
         <main
           id="glass-portfolio-wrapper"
-          className="relative z-10 w-full max-w-[1380px] my-auto min-h-0 lg:h-full lg:max-h-[92vh] glass-primary rounded-2xl sm:rounded-3xl p-2.5 sm:p-3.5 md:p-4.5 shadow-[0_20px_60px_-15px_rgba(70,130,180,0.35)] border border-white/95 backdrop-blur-xl flex flex-col overflow-visible lg:overflow-hidden"
-        >
-          <div className="grid grid-cols-1 lg:grid-cols-[250px_1fr] xl:grid-cols-[265px_1fr] gap-3 lg:gap-3.5 h-auto lg:h-full overflow-visible lg:overflow-hidden items-stretch">
+          className="relative z-10 w-full max-w-[1380px] my-auto min-h-0 lg:h-[88vh] lg:max-h-[960px] glass-primary rounded-2xl sm:rounded-3xl p-3 sm:p-4 md:p-5 shadow-[0_20px_60px_-15px_rgba(70,130,180,0.35)] border border-white/95 backdrop-blur-xl flex flex-col overflow-visible"
+          >
+          <div className="grid grid-cols-1 lg:grid-cols-[250px_1fr] xl:grid-cols-[265px_1fr] gap-3 lg:gap-3.5 h-auto lg:h-full overflow-visible items-stretch">
             {/* Left Profile Card (Self Card) - Compact row & accordion on mobile, slim vertical sidebar on desktop */}
-            <div className="h-auto lg:h-full flex flex-col shrink-0">
+            <div className="h-auto lg:h-full flex flex-col shrink-0 min-h-0">
               <ProfileCard
                 onNavigateTab={(tab) => {
                   setActiveTab(tab);
@@ -55,7 +55,7 @@ export default function App() {
             </div>
 
             {/* Right Main Section (dominant width, fixed intact layout on desktop, fluid on mobile) */}
-            <div className="flex flex-col h-auto lg:h-full overflow-visible lg:overflow-hidden min-w-0 flex-1">
+            <div className="flex flex-col h-auto lg:h-full overflow-visible min-w-0 flex-1 min-h-0">
               {/* Top Banner (tagname__card & techicon__card) */}
               <HeaderBanner />
 

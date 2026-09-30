@@ -13,205 +13,815 @@ export const ResumeModal: React.FC<ResumeModalProps> = ({ isOpen, onClose }) => 
 
   if (!isOpen) return null;
 
-  const handlePrint = () => {
-    try {
-      window.print();
-    } catch (e) {
-      console.warn('Direct print failed, generating printable PDF fallback', e);
-      handleDownloadPdf();
-    }
-  };
-
   const handleDownloadPdf = () => {
     try {
       setIsGeneratingPdf(true);
+
       const doc = new jsPDF({
         orientation: 'portrait',
         unit: 'mm',
-        format: 'a4'
+        format: 'a4',
+        compress: true
       });
+      // ============================================================
+      // PAGE / DESIGN CONSTANTS
+      // ============================================================
 
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const pageHeight = doc.internal.pageSize.getHeight();
-      const margin = 14;
+      const pageWidth = 210;
+      const pageHeight = 297;
+
+      const margin = 9;
       const contentWidth = pageWidth - margin * 2;
-      let y = 16;
 
-      const checkPageBreak = (neededHeight: number) => {
-        if (y + neededHeight > pageHeight - 14) {
-          doc.addPage();
-          y = 16;
+      const colors = {
+        ink: [20, 25, 32] as const,
+        dark: [38, 45, 55] as const,
+        text: [70, 78, 88] as const,
+        muted: [115, 123, 133] as const,
+        line: [218, 222, 227] as const,
+
+        // Modern green accent
+        accent: [49, 122, 83] as const,
+        accentDark: [34, 91, 62] as const,
+        accentLight: [232, 243, 236] as const,
+
+        // Very light panel
+        panel: [247, 249, 248] as const,
+        white: [255, 255, 255] as const,
+
+        // Soft depth/shadow
+        shadow: [225, 228, 231] as const
+      };
+
+      // Header
+      const headerHeight = 31;
+
+      // Main columns
+      const columnGap = 6;
+      const leftWidth = 57;
+      const rightWidth =
+        contentWidth - leftWidth - columnGap;
+
+      const leftX = margin;
+      const rightX = leftX + leftWidth + columnGap;
+
+      // ------------------------------------------------------------
+      // HELPERS
+      // ------------------------------------------------------------
+
+      const setFont = (
+        style: 'normal' | 'bold' | 'italic',
+        size: number,
+        color: readonly [number, number, number] = colors.text
+      ) => {
+        doc.setFont('helvetica', style);
+        doc.setFontSize(size);
+        doc.setTextColor(...color);
+      };
+
+      // Custom Justified Text Renderer for wide columns (Right section)
+      const drawJustifiedText = (
+        text: string,
+        x: number,
+        y: number,
+        maxWidth: number,
+        fontSize: number,
+        style: 'normal' | 'bold' | 'italic' = 'normal',
+        color: readonly [number, number, number] = colors.text
+      ) => {
+        setFont(style, fontSize, color);
+        const lines = doc.splitTextToSize(text, maxWidth);
+        
+        let currentY = y;
+        const lineHeight = fontSize * 0.42;
+
+        lines.forEach((line: string, index: number) => {
+          const isLastLine = index === lines.length - 1;
+          if (isLastLine || lines.length === 1) {
+            doc.text(line, x, currentY);
+          } else {
+            const words = line.trim().split(/\s+/);
+            if (words.length > 1) {
+              const totalWordsWidth = words.reduce((acc, word) => acc + doc.getTextWidth(word), 0);
+              const remainingSpace = maxWidth - totalWordsWidth;
+              const wordSpacing = remainingSpace / (words.length - 1);
+
+              let currentX = x;
+              words.forEach((word) => {
+                doc.text(word, currentX, currentY);
+                currentX += doc.getTextWidth(word) + wordSpacing;
+              });
+            } else {
+              doc.text(line, x, currentY);
+            }
+          }
+          currentY += lineHeight;
+        });
+
+        return lines.length * lineHeight;
+      };
+
+      const drawPanel = (
+        x: number,
+        y: number,
+        width: number,
+        height: number
+      ) => {
+        // Tiny shadow layer
+        doc.setFillColor(...colors.shadow);
+        doc.roundedRect(
+          x + 0.8,
+          y + 0.8,
+          width,
+          height,
+          2,
+          2,
+          'F'
+        );
+
+        // Actual panel
+        doc.setFillColor(...colors.white);
+        doc.roundedRect(
+          x,
+          y,
+          width,
+          height,
+          2,
+          2,
+          'F'
+        );
+
+        doc.setDrawColor(...colors.line);
+        doc.setLineWidth(0.25);
+        doc.roundedRect(
+          x,
+          y,
+          width,
+          height,
+          2,
+          2,
+          'S'
+        );
+      };
+
+      const sectionHeader = (
+        title: string,
+        x: number,
+        y: number,
+        width: number
+      ) => {
+        setFont('bold', 8.5, colors.ink);
+
+        doc.text(title.toUpperCase(), x, y);
+
+        const titleWidth = doc.getTextWidth(
+          title.toUpperCase()
+        );
+
+        // Accent underline
+        doc.setDrawColor(...colors.accent);
+        doc.setLineWidth(1.1);
+
+        const accentLineWidth = Math.min(titleWidth + 4, width);
+        doc.line(
+          x,
+          y + 2,
+          x + accentLineWidth,
+          y + 2
+        );
+
+        // Fine continuation line connected perfectly at the same Y level
+        doc.setDrawColor(...colors.line);
+        doc.setLineWidth(0.3);
+
+        if (x + accentLineWidth < x + width) {
+          doc.line(
+            x + accentLineWidth,
+            y + 2,
+            x + width,
+            y + 2
+          );
         }
       };
 
-      // Header Bar
-      doc.setFillColor(15, 35, 75); // Dark Navy #0f234b
-      doc.rect(margin, y, contentWidth, 24, 'F');
+      const bullet = (
+        text: string,
+        x: number,
+        y: number,
+        width: number,
+        fontSize = 7.4
+      ) => {
+        const bulletX = x;
+        const textX = x + 3;
 
-      doc.setTextColor(255, 255, 255);
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(16);
-      doc.text(PERSONAL_INFO.name.toUpperCase(), margin + 6, y + 9);
+        doc.setFillColor(...colors.accent);
+        doc.circle(
+          bulletX + 0.8,
+          y - 1.0,
+          0.55,
+          'F'
+        );
 
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(9);
-      doc.setTextColor(210, 230, 255);
-      doc.text(PERSONAL_INFO.role.toUpperCase(), margin + 6, y + 15);
-      doc.text('6+ Years Professional Experience', margin + 6, y + 20);
+        const textHeight = drawJustifiedText(
+          text,
+          textX,
+          y,
+          width - 3,
+          fontSize,
+          'normal',
+          colors.text
+        );
 
-      y += 28;
+        return textHeight + 0.5;
+      };
 
-      // Contact Information Bar
-      doc.setFontSize(8);
-      doc.setTextColor(60, 70, 85);
-      doc.setFont('helvetica', 'normal');
-      const contactText = `${PERSONAL_INFO.address} | Phone: ${PERSONAL_INFO.phone} | Email: ${PERSONAL_INFO.email}`;
-      doc.text(contactText, margin, y);
-      y += 5;
+      // ------------------------------------------------------------
+      // PAGE BACKGROUND
+      // ------------------------------------------------------------
 
-      doc.setDrawColor(200, 215, 235);
-      doc.line(margin, y, margin + contentWidth, y);
+      doc.setFillColor(...colors.white);
+      doc.rect(
+        0,
+        0,
+        pageWidth,
+        pageHeight,
+        'F'
+      );
+
+      // ------------------------------------------------------------
+      // HEADER
+      // ------------------------------------------------------------
+
+      // Shadow
+      doc.setFillColor(...colors.shadow);
+      doc.roundedRect(
+        margin + 1,
+        margin + 1,
+        contentWidth,
+        headerHeight,
+        3,
+        3,
+        'F'
+      );
+
+      // Header panel
+      doc.setFillColor(...colors.ink);
+      doc.roundedRect(
+        margin,
+        margin,
+        contentWidth,
+        headerHeight,
+        3,
+        3,
+        'F'
+      );
+
+      // Accent vertical bar
+      doc.setFillColor(...colors.accent);
+      doc.roundedRect(
+        margin,
+        margin,
+        3,
+        headerHeight,
+        2,
+        2,
+        'F'
+      );
+
+      // Name
+      setFont(
+        'bold',
+        20,
+        colors.white
+      );
+
+      doc.text(
+        PERSONAL_INFO.name.toUpperCase(),
+        margin + 8,
+        margin + 10
+      );
+
+      // Role
+      setFont(
+        'normal',
+        9.5,
+        [195, 211, 201]
+      );
+
+      doc.text(
+        PERSONAL_INFO.role.toUpperCase(),
+        margin + 8,
+        margin + 17
+      );
+
+      // Experience badge
+      const experienceText =
+        '6+ YEARS PROFESSIONAL EXPERIENCE';
+
+      const badgeWidth =
+        doc.getTextWidth(experienceText) + 7;
+
+      const badgeX =
+        margin + contentWidth - badgeWidth - 6;
+
+      doc.setFillColor(...colors.accentDark);
+
+      doc.roundedRect(
+        badgeX,
+        margin + 7,
+        badgeWidth,
+        8,
+        2,
+        2,
+        'F'
+      );
+
+      setFont(
+        'bold',
+        7,
+        colors.white
+      );
+
+      doc.text(
+        experienceText,
+        badgeX + 3.5,
+        margin + 12.1
+      );
+
+      // ------------------------------------------------------------
+      // CONTACT STRIP
+      // ------------------------------------------------------------
+
+      let y = margin + headerHeight + 4;
+
+      setFont(
+        'normal',
+        8.2,
+        colors.muted
+      );
+
+      const contactText =
+        `${PERSONAL_INFO.address}  •  ${PERSONAL_INFO.phone}  •  ${PERSONAL_INFO.email}  •  ${PERSONAL_INFO.portfolioUrl}` ;
+
+      const contactLines = doc.splitTextToSize(
+        contactText,
+        contentWidth
+      );
+
+      doc.text(
+        contactLines,
+        margin,
+        y
+      );
+
       y += 6;
 
-      // Section: Professional Summary
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(11);
-      doc.setTextColor(15, 35, 75);
-      doc.text('PROFESSIONAL SUMMARY', margin, y);
-      y += 5;
+      // ------------------------------------------------------------
+      // MAIN COLUMN TOP
+      // ------------------------------------------------------------
 
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(8.5);
-      doc.setTextColor(50, 60, 70);
-      const summaryLines = doc.splitTextToSize(PERSONAL_INFO.tagline, contentWidth);
-      doc.text(summaryLines, margin, y);
-      y += summaryLines.length * 4.2 + 4;
+      const mainTop = y;
 
-      // Section: Core Skills
-      checkPageBreak(30);
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(11);
-      doc.setTextColor(15, 35, 75);
-      doc.text('CORE COMPETENCIES & TECHNICAL PROFICIENCIES', margin, y);
-      y += 5;
+      // ============================================================
+      // LEFT PANEL (Left-aligned for clean, consistent word spacing)
+      // ============================================================
 
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(8.2);
-      doc.setTextColor(50, 60, 70);
+      const leftPanelY = mainTop;
+      const leftPanelHeight =
+        pageHeight - mainTop - margin;
+
+      drawPanel(
+        leftX,
+        leftPanelY,
+        leftWidth,
+        leftPanelHeight
+      );
+
+      let leftY = leftPanelY + 5.5;
+      const leftPadding = 5;
+      const innerLeftX = leftX + leftPadding;
+      const innerLeftWidth = leftWidth - leftPadding * 2;
+
+      // ------------------------------------------------------------
+      // PROFESSIONAL PROFILE
+      // ------------------------------------------------------------
+
+      sectionHeader(
+        'Professional Profile',
+        innerLeftX,
+        leftY,
+        innerLeftWidth
+      );
+
+      leftY += 5;
+
+      const profileHeight = drawJustifiedText(
+        PERSONAL_INFO.tagline,
+        innerLeftX,
+        leftY,
+        innerLeftWidth,
+        7.8,
+        'normal',
+        colors.text
+      );
+
+      leftY += profileHeight + 3.5;
+
+      // ------------------------------------------------------------
+      // TECHNICAL EXPERTISE
+      // ------------------------------------------------------------
+
+      sectionHeader(
+        'Technical Expertise',
+        innerLeftX,
+        leftY,
+        innerLeftWidth
+      );
+
+      leftY += 5;
 
       const skillGroups = [
-        'Programming & Scripting: Python, SQL, JavaScript/React, Shell Scripting',
-        'AI & Orchestration: Agentic AI Workflows, LLM Orchestration (Llama 3, Gemini, Claude, Open Claw), RAG, Prompt Engineering, Tool Calling',
-        'Automation: n8n (Advanced Logic/Code Nodes), n8n Worker/Dispatcher patterns',
-        'Data Engineering: Pipeline Automation, ETL/ELT Processes, API Integration (JSON handling), Data Preprocessing',
-        'Systems & Cloud: Azure (Data Factory, Databricks, Data Lake, SQL), Google BigQuery, NextBank CBS, Cloud Run, Looker Studio, Supabase',
-        'Analytics & Operations: Root-cause analysis, Dashboard Automation, Incident Management, Monitoring, Performance Testing'
+        {
+          title: 'Programming & Scripting',
+          content:
+            'Python, SQL, JavaScript/React, Shell Scripting'
+        },
+        {
+          title: 'AI & Orchestration',
+          content:
+            'Agentic AI Workflows, LLM Orchestration (Llama 3, Gemini, Claude), RAG, Prompt Engineering, Tool Calling'
+        },
+        {
+          title: 'Automation',
+          content:
+            'n8n (Advanced Logic/Code Nodes), n8n Worker/Dispatcher patterns'
+        },
+        {
+          title: 'Data Engineering',
+          content:
+            'Pipeline Automation, ETL/ELT Processes, API Integration (JSON handling), Data Preprocessing'
+        },
+        {
+          title: 'Systems & Cloud',
+          content:
+            'Azure (Data Factory, Databricks, Data Lake, SQL), Google BigQuery, NextBank CBS, Cloud Run, Looker Studio, Supabase'
+        },
+        {
+          title: 'Analytics & Operations',
+          content:
+            'Root-cause analysis, Dashboard Automation, Incident Management, Monitoring, Performance Testing'
+        }
       ];
 
-      skillGroups.forEach((group) => {
-        checkPageBreak(5);
-        const lines = doc.splitTextToSize(`• ${group}`, contentWidth);
-        doc.text(lines, margin, y);
-        y += lines.length * 4;
+      skillGroups.forEach((skill) => {
+        setFont(
+          'bold',
+          7.6,
+          colors.ink
+        );
+
+        doc.text(
+          skill.title,
+          innerLeftX,
+          leftY
+        );
+
+        leftY += 2.8;
+
+        setFont('normal', 7.2, colors.text);
+        const lines = doc.splitTextToSize(skill.content, innerLeftWidth);
+        doc.text(lines, innerLeftX, leftY);
+
+        leftY += lines.length * 3.0 + 2.2;
       });
 
-      y += 3;
+      // ------------------------------------------------------------
+      // EDUCATION
+      // ------------------------------------------------------------
 
-      // Section: Professional Experience
-      checkPageBreak(25);
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(11);
-      doc.setTextColor(15, 35, 75);
-      doc.text('PROFESSIONAL EMPLOYMENT HISTORY', margin, y);
-      y += 5;
+      sectionHeader(
+        'Education',
+        innerLeftX,
+        leftY,
+        innerLeftWidth
+      );
 
-      EXPERIENCES_DATA.forEach((exp) => {
-        checkPageBreak(30);
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(9.5);
-        doc.setTextColor(15, 35, 75);
-        doc.text(`${exp.role} - ${exp.company}`, margin, y);
+      leftY += 5;
 
-        doc.setFont('helvetica', 'italic');
-        doc.setFontSize(8);
-        doc.setTextColor(100, 110, 125);
-        doc.text(exp.period, margin + contentWidth - doc.getTextWidth(exp.period), y);
-        y += 4.5;
+      setFont(
+        'bold',
+        7.6,
+        colors.ink
+      );
 
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(8.2);
-        doc.setTextColor(55, 65, 75);
-        const descLines = doc.splitTextToSize(exp.description, contentWidth);
-        doc.text(descLines, margin, y);
-        y += descLines.length * 3.8 + 2;
+      const degreeLines =
+        doc.splitTextToSize(
+          PERSONAL_INFO.education.degree,
+          innerLeftWidth
+        );
 
-        exp.achievements.forEach((ach) => {
-          checkPageBreak(6);
-          const achLines = doc.splitTextToSize(`- ${ach}`, contentWidth - 4);
-          doc.text(achLines, margin + 2, y);
-          y += achLines.length * 3.8;
-        });
+      doc.text(
+        degreeLines,
+        innerLeftX,
+        leftY
+      );
 
-        y += 3;
+      leftY +=
+        degreeLines.length * 3.0 + 1.8;
+
+      setFont(
+        'normal',
+        7.2,
+        colors.text
+      );
+
+      const educationLines =
+        doc.splitTextToSize(
+          `${PERSONAL_INFO.education.school} • ${PERSONAL_INFO.education.location}`,
+          innerLeftWidth
+        );
+
+      doc.text(
+        educationLines,
+        innerLeftX,
+        leftY
+      );
+
+      leftY +=
+        educationLines.length * 3.0 + 1.8;
+
+      setFont(
+        'normal',
+        7.0,
+        colors.muted
+      );
+
+      doc.text(
+        `Graduated: ${PERSONAL_INFO.education.year}`,
+        innerLeftX,
+        leftY
+      );
+
+      leftY += 4.5;
+
+      // ------------------------------------------------------------
+      // LANGUAGES
+      // ------------------------------------------------------------
+
+      sectionHeader(
+        'Languages',
+        innerLeftX,
+        leftY,
+        innerLeftWidth
+      );
+
+      leftY += 5;
+
+      setFont(
+        'normal',
+        7.4,
+        colors.text
+      );
+
+      doc.text(
+        PERSONAL_INFO.languages.join('  •  '),
+        innerLeftX,
+        leftY
+      );
+
+      // ============================================================
+      // RIGHT PANEL (Justified paragraphs/bullets for a polished look)
+      // ============================================================
+
+      const rightPanelY = mainTop;
+      const rightPanelHeight =
+        pageHeight - mainTop - margin;
+
+      drawPanel(
+        rightX,
+        rightPanelY,
+        rightWidth,
+        rightPanelHeight
+      );
+
+      let rightY = rightPanelY + 5.5;
+      const rightPadding = 5;
+      const innerRightX = rightX + rightPadding;
+      const innerRightWidth = rightWidth - rightPadding * 2;
+
+      // ------------------------------------------------------------
+      // PROFESSIONAL EXPERIENCE
+      // ------------------------------------------------------------
+
+      sectionHeader(
+        'Professional Experience',
+        innerRightX,
+        rightY,
+        innerRightWidth
+      );
+
+      rightY += 8.5;
+
+      EXPERIENCES_DATA.forEach((exp, index) => {
+        // Company / role
+        rightY += 1.5;
+        
+        setFont(
+          'bold',
+          8.2,
+          colors.ink
+        );
+
+        const companyRole =
+          `${exp.role} — ${exp.company}`;
+
+        const roleLines =
+          doc.splitTextToSize(
+            companyRole,
+            innerRightWidth - 30
+          );
+
+        doc.text(
+          roleLines,
+          innerRightX,
+          rightY
+        );
+
+        // Period
+        setFont(
+          'bold',
+          7.4,
+          colors.accentDark
+        );
+
+        const periodWidth =
+          doc.getTextWidth(exp.period);
+
+        doc.text(
+          exp.period,
+          innerRightX +
+            innerRightWidth -
+            periodWidth,
+          rightY
+        );
+
+        rightY +=
+          roleLines.length * 3.4 + 1.8;
+
+        // Description (Justified)
+        const descHeight = drawJustifiedText(
+          exp.description,
+          innerRightX,
+          rightY,
+          innerRightWidth,
+          7.4,
+          'normal',
+          colors.text
+        );
+
+        rightY += descHeight + 1.5;
+
+        // Achievements (Justified)
+        exp.achievements.forEach(
+          (achievement) => {
+            rightY += bullet(
+              achievement,
+              innerRightX,
+              rightY,
+              innerRightWidth,
+              7.2
+            );
+          }
+        );
+
+        // Divider between jobs
+        if (
+          index <
+          EXPERIENCES_DATA.length - 1
+        ) {
+          rightY += 2.0;
+
+          doc.setDrawColor(...colors.line);
+          doc.setLineWidth(0.25);
+
+          doc.line(
+            innerRightX,
+            rightY,
+            innerRightX + innerRightWidth,
+            rightY
+          );
+
+          rightY += 3.5;
+        }
       });
 
-      // Section: Certifications
-      checkPageBreak(30);
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(11);
-      doc.setTextColor(15, 35, 75);
-      doc.text('CERTIFICATIONS & COMPLIANCE', margin, y);
-      y += 5;
+      // ------------------------------------------------------------
+      // CERTIFICATIONS
+      // ------------------------------------------------------------
+
+      rightY += 1.5;
+
+      sectionHeader(
+        'Certifications & Compliance',
+        innerRightX,
+        rightY,
+        innerRightWidth
+      );
+
+      rightY += 6.5;
 
       CERTIFICATES_DATA.forEach((cert) => {
-        checkPageBreak(6);
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(8.5);
-        doc.setTextColor(30, 45, 65);
-        doc.text(`• ${cert.title} [${cert.code}]`, margin, y);
+        // Certification title
+        setFont(
+          'bold',
+          7.4,
+          colors.ink
+        );
 
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(8);
-        doc.setTextColor(100, 110, 125);
-        doc.text(`- ${cert.issuer} (${cert.date})`, margin + 115, y);
-        y += 4.5;
+        const certTitle =
+          `${cert.title} [${cert.code}]`;
+
+        const certLines =
+          doc.splitTextToSize(
+            certTitle,
+            innerRightWidth - 3
+          );
+
+        doc.text(
+          certLines,
+          innerRightX + 2.5,
+          rightY
+        );
+
+        // Accent dot
+        doc.setFillColor(...colors.accent);
+        doc.circle(
+          innerRightX + 0.8,
+          rightY - 1.1,
+          0.5,
+          'F'
+        );
+
+        rightY +=
+          certLines.length * 3.1 + 0.8;
+
+        setFont(
+          'normal',
+          7.0,
+          colors.muted
+        );
+
+        doc.text(
+          `${cert.issuer} (${cert.date})`,
+          innerRightX + 2.5,
+          rightY
+        );
+
+        rightY += 3.5;
       });
 
-      y += 3;
+      // ------------------------------------------------------------
+      // BOTTOM MICRO FOOTER
+      // ------------------------------------------------------------
 
-      // Section: Education
-      checkPageBreak(20);
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(11);
-      doc.setTextColor(15, 35, 75);
-      doc.text('EDUCATION & BACKGROUND', margin, y);
-      y += 5;
+      setFont(
+        'normal',
+        6.5,
+        colors.muted
+      );
 
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(9);
-      doc.setTextColor(30, 45, 65);
-      doc.text(PERSONAL_INFO.education.degree, margin, y);
-      y += 4.2;
+      const footerText =
+        `${PERSONAL_INFO.name}  •  ${PERSONAL_INFO.email}`;
 
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(8.2);
-      doc.setTextColor(70, 80, 95);
-      doc.text(`${PERSONAL_INFO.education.school} • ${PERSONAL_INFO.education.location} • Graduated: ${PERSONAL_INFO.education.year}`, margin, y);
-      y += 5;
+      const footerWidth =
+        doc.getTextWidth(footerText);
 
-      // Languages
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(8.5);
-      doc.setTextColor(30, 45, 65);
-      doc.text(`Languages: ${PERSONAL_INFO.languages.join(', ')}`, margin, y);
+      doc.text(
+        footerText,
+        pageWidth - margin - footerWidth,
+        pageHeight - 5
+      );
 
-      // Save PDF
-      doc.save('James_Elliot_A_Ciano_Curriculum_Vitae.pdf');
+      // ------------------------------------------------------------
+      // SAVE
+      // ------------------------------------------------------------
+
+      doc.save(
+        'James_Elliot_Ciano_Curriculum_Vitae.pdf'
+      );
+
     } catch (err) {
-      console.error('PDF export error:', err);
+      console.error(
+        'PDF export error:',
+        err
+      );
     } finally {
       setIsGeneratingPdf(false);
     }
+  };
+
+  const handlePrint = () => {
+    window.print();
   };
 
   return (
@@ -324,7 +934,7 @@ export const ResumeModal: React.FC<ResumeModalProps> = ({ isOpen, onClose }) => 
               <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200">
                 <div className="font-bold text-slate-900 mb-1">Programming & AI</div>
                 <div className="text-slate-600 text-[11px] leading-relaxed">
-                  Python, SQL, JavaScript/React, Shell Scripting, Agentic AI Workflows, LLM Orchestration (Llama 3, Gemini, Claude, Open Claw), RAG, Prompt Engineering, Tool Calling.
+                  Python, SQL, JavaScript/React, Shell Scripting, AI Workflows, LLM Orchestration (Llama 3, Gemini, Claude), RAG, Prompt Engineering, Tool Calling.
                 </div>
               </div>
 

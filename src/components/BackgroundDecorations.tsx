@@ -24,32 +24,16 @@ export const BackgroundDecorations: React.FC = () => {
       {/* Center ambient glow underneath the main glass interface */}
       <div className="absolute top-1/3 left-1/3 -translate-x-1/2 -translate-y-1/2 w-[34rem] h-[34rem] rounded-full bg-sky-300/35 blur-3xl" />
 
-      {/* Floating 3D-styled translucent glass spheres */}
-      <div className="absolute top-12 left-1/4 w-16 h-16 rounded-full bg-gradient-to-br from-white/60 to-white/10 backdrop-blur-md border border-white/80 shadow-[0_8px_32px_rgba(0,120,255,0.25)] animate-orb-2 hidden md:block" />
-      <div className="absolute bottom-16 right-1/4 w-20 h-20 rounded-full bg-gradient-to-br from-white/50 to-white/10 backdrop-blur-md border border-white/70 shadow-[0_8px_32px_rgba(255,140,0,0.2)] animate-orb-3 hidden md:block" />
-
-      {/* Subtle retro accents */}
-      <div className="absolute top-4 left-6 opacity-40 hidden 2xl:block">
-        <div className="grid grid-cols-3 gap-1 w-16 h-10 p-1 rounded-xl bg-white/30 backdrop-blur-md border border-white/60 shadow-xs">
-          <div className="bg-sky-400/70 rounded col-span-1" />
-          <div className="bg-sky-400/70 rounded col-span-1" />
-          <div className="col-span-1" />
-          <div className="col-span-1" />
-          <div className="bg-sky-400/70 rounded col-span-1" />
-          <div className="bg-sky-400/70 rounded col-span-1" />
-        </div>
-      </div>
-
-      <div className="absolute top-4 right-8 opacity-40 hidden 2xl:block">
-        <div className="grid grid-cols-3 gap-1 w-16 h-10 p-1 rounded-xl bg-white/30 backdrop-blur-md border border-white/60 shadow-xs">
-          <div className="bg-amber-400/80 rounded col-span-1" />
-          <div className="bg-amber-400/80 rounded col-span-1" />
-          <div className="bg-amber-400/80 rounded col-span-1" />
-          <div className="col-span-1" />
-          <div className="bg-amber-400/80 rounded col-span-1" />
-          <div className="col-span-1" />
-        </div>
-      </div>
+      {/* Floating 3D-styled translucent glass spheres repositioned to outer margins */}
+      
+      {/* 1. Top Left margin bubble */}
+      <div className="absolute top-8 left-12 w-16 h-16 rounded-full bg-gradient-to-br from-white/70 to-white/15 backdrop-blur-md border border-white/80 shadow-[0_8px_32px_rgba(0,120,255,0.25)] animate-orb-2 hidden md:block" />
+      
+      {/* 2. Bottom Left margin bubble */}
+      <div className="absolute bottom-12 left-16 w-20 h-20 rounded-full bg-gradient-to-br from-white/60 to-white/10 backdrop-blur-md border border-white/70 shadow-[0_8px_32px_rgba(255,140,0,0.2)] animate-orb-3 hidden md:block" />
+      
+      {/* 3. Top Right margin bubble */}
+      <div className="absolute top-12 right-16 w-24 h-24 rounded-full bg-gradient-to-br from-white/50 to-white/10 backdrop-blur-md border border-white/60 shadow-[0_8px_32px_rgba(255,0,140,0.15)] animate-orb-1 hidden md:block" />
     </div>
   );
 };

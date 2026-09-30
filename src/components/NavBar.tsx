@@ -25,32 +25,28 @@ export const NavBar: React.FC<NavBarProps> = ({ activeTab, onSelectTab }) => {
   });
 
   const tabRefs = useRef<{ [key in TabType]?: HTMLButtonElement | null }>({});
-  const navContainerRef = useRef<HTMLDivElement | null>(null);
+  const innerContainerRef = useRef<HTMLDivElement | null>(null);
 
-  // Measure and position the interactive orange line
+  // Measure and position the interactive orange line using offsetLeft/offsetWidth
+  // This natively solves mobile horizontal scrolling offsets!
   const updateLinePosition = (targetTab: TabType) => {
     const tabEl = tabRefs.current[targetTab];
-    const navEl = navContainerRef.current;
-    if (tabEl && navEl) {
-      const navRect = navEl.getBoundingClientRect();
-      const tabRect = tabEl.getBoundingClientRect();
-      const left = tabRect.left - navRect.left;
-      const width = tabRect.width;
+    if (tabEl) {
+      const left = tabEl.offsetLeft;
+      const width = tabEl.offsetWidth;
       setLineStyle({ left, width, opacity: 1 });
     }
   };
 
-  // Follow activeTab on mount and whenever activeTab changes
+  // Follow activeTab on mount and whenever activeTab or hoveredTab changes
   useEffect(() => {
-    updateLinePosition(hoveredTab || activeTab);
+    const target = hoveredTab || activeTab;
+    updateLinePosition(target);
 
-    // If on a compact screen with overflow, scroll active tab into view
-    if (tabRefs.current[activeTab] && navContainerRef.current) {
-      const tabEl = tabRefs.current[activeTab];
-      const navEl = navContainerRef.current;
-      if (navEl.scrollWidth > navEl.clientWidth) {
-        tabEl?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-      }
+    // If on a compact screen with overflow, smooth-scroll active tab into view
+    const tabEl = tabRefs.current[activeTab];
+    if (tabEl) {
+      tabEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
     }
   }, [activeTab, hoveredTab]);
 
@@ -64,11 +60,14 @@ export const NavBar: React.FC<NavBarProps> = ({ activeTab, onSelectTab }) => {
   return (
     <nav
       id="main-navigation-bar"
-      ref={navContainerRef}
       onMouseLeave={() => setHoveredTab(null)}
       className="glass-subcard rounded-xl px-2 py-1.5 mb-3 border border-white/90 shadow-sm relative overflow-x-auto custom-scrollbar select-none"
     >
-      <div className="flex items-center gap-1 sm:gap-2 min-w-max relative pb-1">
+      {/* Inner track container holding the relative positioning for the indicator line */}
+      <div 
+        ref={innerContainerRef}
+        className="flex items-center gap-1 sm:gap-2 min-w-max relative pb-1"
+      >
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -120,7 +119,7 @@ export const NavBar: React.FC<NavBarProps> = ({ activeTab, onSelectTab }) => {
           );
         })}
 
-        {/* Interactive following orange line (follows hover and returns to active tab) */}
+        {/* Interactive following orange line (anchored to inner container scroll coordinates) */}
         <div
           id="nav-interactive-orange-indicator"
           className="absolute bottom-0 h-1.5 rounded-full pointer-events-none z-20 transition-all duration-300 ease-out"

@@ -14,8 +14,6 @@ import N8nLogo from '../assets/skills/n8n.svg';
 import DataAnalyticsLogo from '../assets/skills/googlebigquery.svg';
 import FastAPILogo from '../assets/skills/fastapi.svg';
 
-
-
 interface ProfileCardProps {
   onNavigateTab: (tab: TabType) => void;
   onOpenResume: () => void;
@@ -33,23 +31,33 @@ const SKILL_LOGOS: Record<string, string> = {
 export const ProfileCard: React.FC<ProfileCardProps> = ({ onNavigateTab, onOpenResume }) => {
   const primarySkills = SKILLS_DATA.slice(0, 6);
   const [showMobileSkills, setShowMobileSkills] = useState(false);
-  
 
   return (
     <aside
       id="self-profile-card"
-      className="glass-subcard rounded-2xl p-3 sm:p-3.5 lg:p-4 flex flex-col justify-between h-auto lg:h-full border border-white/90 shadow-md relative overflow-hidden"
+      className="glass-subcard rounded-2xl p-3.5 sm:p-4 lg:p-4 flex flex-col justify-between h-auto lg:h-full border border-white/90 shadow-md relative overflow-hidden"
     >
+      {/* BACKGROUND DECORATIVE BUBBLES */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+        <div className="absolute top-4 left-6 w-2.5 h-2.5 bg-sky-400/30 rounded-full animate-pulse" />
+        <div className="absolute top-16 right-5 w-3.5 h-3.5 bg-blue-500/20 rounded-full animate-bounce" style={{ animationDuration: '3s' }} />
+        <div className="absolute top-32 left-4 w-2 h-2 bg-indigo-400/30 rounded-full" />
+        <div className="absolute bottom-24 right-6 w-3 h-3 bg-sky-300/40 rounded-full animate-pulse" style={{ animationDuration: '4s' }} />
+        <div className="absolute bottom-12 left-8 w-2.5 h-2.5 bg-blue-400/30 rounded-full" />
+      </div>
 
       {/* MOBILE COMPACT PRESENTATION (< lg) */}
-      <div className="block lg:hidden">
+      <div className="block lg:hidden relative z-10">
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
             {/* Mobile Avatar with Status Badge */}
             <div className="relative shrink-0">
+              {/* Tiny floating bubble near avatar */}
+              <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-sky-400 rounded-full border border-white animate-ping" style={{ animationDuration: '3s' }} />
+              
               <div className="w-14 h-14 rounded-full p-0.5 bg-gradient-to-tr from-sky-400 to-blue-600 shadow-sm">
                 <img
-                  src="src/assets/James.jpg"
+                  src={JamesImage}
                   alt="James - Data & AI Automation Specialist"
                   className="w-full h-full object-cover rounded-full"
                   referrerPolicy="no-referrer"
@@ -63,7 +71,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({ onNavigateTab, onOpenR
               />
             </div>
 
-            {/* Mobile Title & Meta (Name removed per user request, showcasing role & status) */}
+            {/* Mobile Title & Meta */}
             <div className="min-w-0">
               <span className="text-xs font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-100 inline-block truncate max-w-full">
                 {PERSONAL_INFO.role}
@@ -100,7 +108,6 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({ onNavigateTab, onOpenR
 
         {/* Mobile Expandable Skills Bar Toggle */}
         <div className="flex items-center justify-between mt-2 pt-2 border-t border-blue-100/60 text-xs">
-          {/* Social icons */}
           <div className="flex items-center gap-1.5">
             <a
               href={PERSONAL_INFO.socials.github}
@@ -172,13 +179,19 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({ onNavigateTab, onOpenR
         )}
       </div>
 
-      {/* DESKTOP FULL PRESENTATION (lg:) */}
-      <div className="hidden lg:flex flex-col justify-between h-full space-y-3">
-        <div className="space-y-3">
-          {/* Profile Avatar & Online Status */}
+      {/* DESKTOP FULL PRESENTATION (lg:) - Balanced with floating bubbles */}
+      <div className="hidden lg:flex flex-col justify-between h-full space-y-2.5 relative z-10">
+        <div className="space-y-2.5">
+          {/* Responsive Profile Avatar with Tiny Floating Bubbles */}
           <div className="flex flex-col items-center text-center pt-1">
             <div className="relative mb-2.5 group">
-              <div className="w-28 h-28 xl:w-50 xl:h-50 rounded-full p-1 bg-gradient-to-tr from-sky-300 via-blue-400 to-indigo-500 shadow-md">
+              {/* Floating tiny bubbles surrounding the avatar frame */}
+              <span className="absolute -top-2 left-2 w-3 h-3 bg-sky-400/70 rounded-full shadow-2xs animate-pulse" />
+              <span className="absolute top-4 -right-2 w-2.5 h-2.5 bg-blue-500/60 rounded-full shadow-2xs animate-bounce" style={{ animationDuration: '2.5s' }} />
+              <span className="absolute -bottom-1 left-3 w-2 h-2 bg-indigo-400/60 rounded-full shadow-2xs" />
+              <span className="absolute bottom-6 -left-3 w-3.5 h-3.5 bg-sky-300/50 rounded-full shadow-2xs animate-pulse" style={{ animationDuration: '4s' }} />
+
+              <div className="w-28 h-28 lg:w-32 lg:h-32 xl:w-40 xl:h-40 rounded-full p-1 bg-gradient-to-tr from-sky-300 via-blue-400 to-indigo-500 shadow-md">
                 <img
                   src={JamesImage}
                   alt="James - Data & AI Automation Specialist"
@@ -194,12 +207,12 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({ onNavigateTab, onOpenR
               />
             </div>
 
-            {/* Role & Experience (Name removed per user request, featured in main right section) */}
-            <span className="text-xs font-bold uppercase tracking-wider text-blue-700 bg-blue-50/90 px-3 py-1 rounded-full border border-blue-100/90 shadow-2xs">
+            {/* Role & Experience */}
+            <span className="text-xs font-bold uppercase tracking-wider text-blue-700 bg-blue-50/90 px-3 py-0.5 rounded-full border border-blue-100/90 shadow-2xs">
               {PERSONAL_INFO.role}
             </span>
 
-            <div className="flex items-center justify-center gap-2 text-[11px] text-slate-600 mt-1.5 font-medium flex-wrap">
+            <div className="flex items-center justify-center gap-2 text-[11px] text-slate-600 mt-1 font-medium flex-wrap">
               <span className="flex items-center gap-1">
                 <MapPin className="w-3 h-3 text-sky-500" />
                 {PERSONAL_INFO.location}
@@ -212,7 +225,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({ onNavigateTab, onOpenR
           </div>
 
           {/* Quick Socials */}
-          <div className="flex items-center justify-center gap-1.5 py-1 border-y border-blue-100/60">
+          <div className="flex items-center justify-center gap-2 py-1.5 border-y border-blue-100/60">
             <a
               id="social-github-btn"
               href={PERSONAL_INFO.socials.github}
@@ -257,7 +270,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({ onNavigateTab, onOpenR
 
           {/* Professional Skills section with progress bars */}
           <div>
-            <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center justify-between mb-1.5">
               <h3 className="text-[11px] font-bold uppercase tracking-wider text-blue-900 flex items-center gap-1.5">
                 <Award className="w-3.5 h-3.5 text-sky-500" />
                 Core Skills
@@ -265,80 +278,76 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({ onNavigateTab, onOpenR
               <span className="text-[10px] font-bold text-sky-600 bg-sky-50 px-2 py-0.5 rounded-full border border-sky-100">Mastery</span>
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               {primarySkills.map((skill) => {
                 const logoSrc = SKILL_LOGOS[skill.iconName];
+                return (
+                  <div key={skill.name} className="group">
+                    {/* Skill header */}
+                    <div className="flex items-center justify-between gap-2 mb-1">
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        {/* Logo container */}
+                        <div
+                          className="w-6 h-6 rounded-md flex items-center justify-center shrink-0 border transition-all duration-200 group-hover:scale-105 group-hover:shadow-sm"
+                          style={{
+                            backgroundColor: `${skill.color}12`,
+                            borderColor: `${skill.color}30`,
+                          }}
+                        >
+                          {logoSrc ? (
+                            <img
+                              src={logoSrc}
+                              alt=""
+                              aria-hidden="true"
+                              className="w-3.5 h-3.5 object-contain"
+                              loading="lazy"
+                              decoding="async"
+                            />
+                          ) : (
+                            <span
+                              className="w-2 h-2 rounded-full"
+                              style={{ backgroundColor: skill.color }}
+                            />
+                          )}
+                        </div>
 
-                        return (
-                <div
-                  key={skill.name}
-                  className="group"
-                >
-                  {/* Skill header */}
-                  <div className="flex items-center justify-between gap-2 mb-1.5">
-                    <div className="flex items-center gap-2 min-w-0">
-                      {/* Logo container */}
-                      <div
-                        className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 border transition-all duration-200 group-hover:scale-105 group-hover:shadow-sm"
-                        style={{
-                          backgroundColor: `${skill.color}12`,
-                          borderColor: `${skill.color}30`,
-                        }}
-                      >
-                        {logoSrc ? (
-                          <img
-                            src={logoSrc}
-                            alt=""
-                            aria-hidden="true"
-                            className="w-[18px] h-[18px] object-contain"
-                            loading="lazy"
-                            decoding="async"
-                          />
-                        ) : (
-                          <span
-                            className="w-2 h-2 rounded-full"
-                            style={{ backgroundColor: skill.color }}
-                          />
-                        )}
+                        {/* Skill name */}
+                        <span className="text-[11px] font-semibold text-slate-700 group-hover:text-blue-700 transition-colors truncate">
+                          {skill.name}
+                        </span>
                       </div>
 
-                      {/* Skill name */}
-                      <span className="text-[11px] font-semibold text-slate-700 group-hover:text-blue-700 transition-colors truncate">
-                        {skill.name}
+                      {/* Percentage */}
+                      <span
+                        className="text-[10px] font-bold shrink-0 px-1.5 py-0.2 rounded-md"
+                        style={{
+                          color: skill.color,
+                          backgroundColor: `${skill.color}10`,
+                        }}
+                      >
+                        {skill.level}%
                       </span>
                     </div>
 
-                    {/* Percentage */}
-                    <span
-                      className="text-[10px] font-bold shrink-0 px-1.5 py-0.5 rounded-md"
-                      style={{
-                        color: skill.color,
-                        backgroundColor: `${skill.color}10`,
-                      }}
-                    >
-                      {skill.level}%
-                    </span>
+                    {/* Progress bar */}
+                    <div className="w-full bg-slate-200/60 h-1.5 rounded-full overflow-hidden">
+                      <div
+                        className="h-full rounded-full transition-all duration-700 ease-out"
+                        style={{
+                          width: `${skill.level}%`,
+                          background: `linear-gradient(90deg, ${skill.color}, #38BDF8)`,
+                        }}
+                      />
+                    </div>
                   </div>
-
-                  {/* Progress bar */}
-                  <div className="w-full bg-slate-200/60 h-1.5 rounded-full overflow-hidden">
-                    <div
-                      className="h-full rounded-full transition-all duration-700 ease-out"
-                      style={{
-                        width: `${skill.level}%`,
-                        background: `linear-gradient(90deg, ${skill.color}, #38BDF8)`,
-                      }}
-                    />
-                  </div>
-                </div>
-              );
+                );
               })}
             </div>
           </div>
         </div>
 
         {/* Action buttons */}
-        <div className="pt-3 border-t border-blue-100/70 space-y-1.5 mt-2">
+        <div className="pt-2 border-t border-blue-100/70 space-y-1.5 mt-auto">
           <button
             id="btn-hire-me-sidebar"
             onClick={() => onNavigateTab('contact')}

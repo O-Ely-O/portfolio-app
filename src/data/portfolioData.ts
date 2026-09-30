@@ -13,6 +13,7 @@ export const PERSONAL_INFO = {
   phone: '+63 960 246 3522',
   availability: 'Available for Projects & Full-Time',
   yearsOfExperience: '6+ Years',
+  portfolioUrl: 'https://portfolio-app-blue-rho.vercel.app',
   education: {
     degree: 'Bachelor of Science in Computer Engineering',
     school: 'AMA Computer College (Davao)',
@@ -338,13 +339,13 @@ export const EXPERIENCES_DATA: ExperienceItem[] = [
     company: '3 TONE ENTERPRISE LLC',
     role: 'Freelance AI & Automation Engineer',
     period: 'Dec - Feb',
-    description: 'Helped startups automate their operations by building backend infrastructure, including Agentic AI and automation workflows that handle their data and sales pipelines—eliminating manual entry.',
+    description: 'Helped startups automate their operations by building backend infrastructure, including AI and automation workflows that handle their data and sales pipelines—eliminating manual entry.',
     achievements: [
-      'Architected end-to-end agentic AI pipelines with n8n worker/dispatcher patterns',
-      'Eliminated manual lead entry by integrating Supabase, Slack, Stripe, and CRM platforms',
-      'Engineered automated RAG workflows with modern LLMs for real-time lead qualification'
+      'Built AI workflows that automatically manage lead pipelines, follow-ups, and CRM updates',
+      'Eliminated manual lead entry by integrating Supabase, Slack, Forms, Stripe, and CRM platforms',
+      'Implement automated RAG workflows with modern LLMs for real-time lead qualification'
     ],
-    tags: ['Agentic AI', 'n8n', 'Python', 'Supabase', 'API Integrations', 'Stripe']
+    tags: ['AI', 'n8n', 'Python', 'Supabase', 'API Integrations', 'Stripe']
   },
   {
     company: 'Agronomika Finance Corporation',
